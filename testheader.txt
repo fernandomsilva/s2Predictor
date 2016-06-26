@@ -1,0 +1,1 @@
+{"m_elapsedGameLoops": 17444, "m_signature": "StarCraft II replay\u001b11", "m_type": 2, "m_version": {"m_baseBuild": 39576, "m_minor": 1, "m_revision": 4, "m_flags": 1, "m_major": 3, "m_build": 41219}}
