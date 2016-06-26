@@ -1,0 +1,123 @@
+<head>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+	<script type="text/javascript" src="jquery.min.js"></script>
+	<style type="text/css">
+		.axis path,
+		.axis line {
+			fill: none;
+			stroke: black;
+			shape-rendering: crispEdges;
+		}
+		.axis text {
+			fill: none;
+			stroke: black;
+			shape-rendering: crispEdges;
+			font-family: sans-serif;
+			font-size: 11px;
+		}
+	</style>
+</head>
+<body>
+	<script>
+		function onstart() {
+			var height = 300;
+			var width = 17444*5;
+			var padding = 25;
+
+			//get the body element
+			var svg = d3.select("body")
+				//Add an html element called svg 
+				.append("svg")
+					//set the width and height attributes to this element to be 300
+					.attr("width", width + padding)
+					.attr("height", height + padding);
+
+			//Scales for placing elements on screen
+			var x = d3.scale.linear()
+					.domain([0,17444])
+					.range([padding,width]);
+
+			var y = d3.scale.linear()
+					.domain([0,7])
+					.range([padding,height]);
+
+			//Axis are the visual renderings of scales
+			var xAxis = d3.svg.axis().scale(x).orient("bottom").ticks(200);
+			var yAxis = d3.svg.axis().scale(y).orient("right");
+			
+			//This puts those axis on screen
+			svg.append("g").attr("class", "axis").call(xAxis);
+			svg.append("g").attr("class", "axis").call(yAxis);
+
+			//Load up the JSON file example.json
+			d3.json("./test2.json", function(error, data) {
+				//console.log("JSON");
+				if (error) {
+					return console.warn(error);
+				}
+
+				for (var i=0; i < 7; i++)
+				{
+					var test = {};
+					test["total"] = 0;
+					for (var j=0; j<data.length; j++)
+					{
+						if (data[j]["_userid"]["m_userId"] == i)
+						{
+							if (!(data[j]["_event"] in test))
+							{
+								test[data[j]["_event"]] = 1;
+								test["total"] = test["total"] + 1;
+							}
+							else
+							{
+								test[data[j]["_event"]] = test[data[j]["_event"]] + 1;
+								test["total"] = test["total"] + 1;
+							}
+						}
+					}
+					console.log(i);
+					console.log(test);
+				}
+				/*var highest_loop = 0;
+				var test = new Array();
+				test[0] = 0;
+				test[1] = 0;
+				test[2] = 0;
+				test[3] = 0;
+				test[4] = 0;
+				test[5] = 0;
+				test[6] = 0;
+				for (var i=0; i < data.length; i++)
+				{
+					test[data[i]["_userid"]["m_userId"]] = test[data[i]["_userid"]["m_userId"]] + 1;
+					//if (data[i]["_gameloop"] > highest_loop)
+					//{
+					//	highest_loop = data[i]["_gameloop"];
+					//}
+				}*/
+
+				//Select all circles (but it's empty...?)
+				svg.selectAll("circle")
+					//Loop through the data
+					.data(data).enter()
+						//Add a rectangle for each data element
+						.append("circle")
+							.attr("r", "5")
+							//.attr("eventname", function(d) { return d._event; })
+							//function(d) accesses the data. The return value of the function
+							//is the value the attribute gets!
+							.attr("cx", function(d) { return x(d._gameloop); })
+							.attr("cy", function(d) { return y(d._userid.m_userId); })
+							.attr("fill", "red")
+						    .append("svg:title")
+						    .text(function(d) { return d._event; })
+				//console.log(highest_loop);
+				//console.log(test);
+				//console.log(data[0]);
+			});
+		}
+		
+		window.onload = onstart();
+	</script>
+</body>
